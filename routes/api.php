@@ -25,4 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
     // crud lainnya
     Route::resource('/posts', \App\Http\Controllers\Api\PostController::class)->except(['create', 'edit']);
+    Route::resource('/categories', \App\Http\Controllers\Api\CategoryController::class)->except(['create', 'edit']);
+    Route::resource('/products', \App\Http\Controllers\Api\ProductController::class)->except(['create', 'edit']);
+    Route::resource('/orders', \App\Http\Controllers\Api\OrderController::class);
+    Route::get('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'show']);
 });

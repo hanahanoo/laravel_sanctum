@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
+            $table->BigIncrements('id');
             $table->string('name');
             $table->string('desc');
             $table->integer('price');
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('foto');
             $table->unsignedBigInteger('id_category');
             // relasi
-            $table->foreign('id_category')->references('id')->on('category')->onDelete('cascade');
+            $table->foreign('id_category')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
         });
     }

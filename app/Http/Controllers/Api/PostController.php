@@ -21,9 +21,9 @@ class PostController extends Controller
     {
         $posts = Post::latest()->get();
         $res   = [
+            'success' => true,
             'data'    => $posts,
             'message' => 'List posts',
-            'success' => true
         ];
 
         return response()->json($res, 200);
@@ -131,7 +131,7 @@ class PostController extends Controller
         $res = [
             'success' => true,
             'data'    => $post,
-            'message' => 'Store Post'
+            'message' => 'Update Post'
         ];
 
         return response()->json($res, 201);
@@ -154,7 +154,7 @@ class PostController extends Controller
             Storage::disk('public')->delete($post->foto);
         }
 
-        $post->delete;
+        $post->delete();
 
         return response()->json([
             'success' => true,
