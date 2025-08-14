@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\OrderDetails;
-use App\Models\Orders;
+use App\Models\OrderDetail;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +17,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Orders::where('id_user', Auth::id())->latest()->get();
+        $orders = Order::where('id_user', Auth::id())->latest()->get();
         $count = $orders->count();
         if($count == 0){
             $res = [
@@ -42,7 +42,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'total' => 'required|integer',
+            'total' => 'nullable|integer',
             'qty' => 'required|integer',
             'price' => 'required|integer',
             'id_product' => 'required|integer'
@@ -51,13 +51,14 @@ class OrderController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $order = new Orders;
+        $total = $request->price * $request->qty;
+        $order = new Order;
         $order->id_user = Auth::id();
         $order->order_code = 'ORD' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
-        $order->total = $request->total;
+        $order->total = $total;
         $order->save();
 
-        $orderdetail = new OrderDetails;
+        $orderdetail = new OrderDetail;
         $orderdetail->id_order = $order->id;
         $orderdetail->id_product = $request->id_product;
         $orderdetail->qty = $request->qty;
@@ -76,8 +77,8 @@ class OrderController extends Controller
      */
     public function show($code)
     {
-        $order = Orders::where('order_code', $code)->first();
-        $orderdetail = OrderDetails::find($order->id);
+        $order = Order::where('order_code', $code)->first();
+        $orderdetail = OrderDetail::find($order->id);
         if(! $order){
             return response()->json([
                 'message' => 'Data Not Found',
@@ -103,7 +104,7 @@ class OrderController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $order = Orders::find($id);
+        $order = Order::find($id);
         $order->id_order = Auth::id();
         $order->order_code = $order->order_code;
         $order->total = $request->total;
@@ -121,7 +122,7 @@ class OrderController extends Controller
      */
     public function destroy($id)
     {
-        $order = Orders::find($id);
+        $order = Order::find($id);
         if(! $order){
             return response()->json([
                 'message' => 'Data Not Found',
