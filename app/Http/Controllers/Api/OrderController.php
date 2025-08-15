@@ -78,18 +78,27 @@ class OrderController extends Controller
     public function show($code)
     {
         $order = Order::where('order_code', $code)->first();
-        $orderdetail = OrderDetail::find($order->id);
-        if(! $order){
+
+        if (! $order) {
             return response()->json([
                 'message' => 'Data Not Found',
             ], 404);
         }
+
+        $orderdetail = OrderDetail::with('product', 'order')->where('id_order', $order->id)->first();
+
+        if (! $orderdetail) {
+            return response()->json([
+                'message' => 'Order detail not found',
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $orderdetail,
             'message' => 'Data Found'
         ], 200);
-        
+
     }
 
     /**

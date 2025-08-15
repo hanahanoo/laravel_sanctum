@@ -11,4 +11,5 @@ class Order extends Model
     use HasFactory;
     protected $fillable = ['id_user', 'order_code', 'total'];
 
+
 }
